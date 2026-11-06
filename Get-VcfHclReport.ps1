@@ -79,6 +79,9 @@ $Hosts = Get-Cluster -Name $ClusterName | Get-VMHost
 
 $Report = [System.Collections.Generic.List[PSObject]]::new()
 
+# Capture cluster collection timestamp once
+$collectionTimestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss zzz")
+
 foreach ($vmHost in $Hosts) {
     Write-Host "Processing Host: $($vmHost.Name)" -ForegroundColor Yellow
     
@@ -105,25 +108,26 @@ foreach ($vmHost in $Hosts) {
         }
     } catch {}
 
-    # Gather Base Platform Info as a single entry
+    # Gather Base Platform Info as a single entry (carries the collection timestamp)
     $Report.Add([PSCustomObject]@{
-        HostName          = $vmHost.Name
-        Vendor            = $vendor
-        ServerModel       = $serverModel
-        BiosVersion       = $biosVersion
-        CPUModel          = $cpuModel
-        TotalCores        = $totalCores
-        TotalMemoryGB     = $totalMemoryGB
-        TPMVersion        = $tpmVersion
-        Category          = "Host Platform"
-        DeviceName        = "System Board"
-        HardwareModel     = "System Board"
-        CurrentFirmware   = $biosVersion
-        CurrentDriver     = "N/A"
-        VID               = "N/A"
-        DID               = "N/A"
-        SVID              = "N/A"
-        SSID              = "N/A"
+        CollectionTimestamp = $collectionTimestamp
+        HostName            = $vmHost.Name
+        Vendor              = $vendor
+        ServerModel         = $serverModel
+        BiosVersion         = $biosVersion
+        CPUModel            = $cpuModel
+        TotalCores          = $totalCores
+        TotalMemoryGB       = $totalMemoryGB
+        TPMVersion          = $tpmVersion
+        Category            = "Host Platform"
+        DeviceName          = "System Board"
+        HardwareModel       = "System Board"
+        CurrentFirmware     = $biosVersion
+        CurrentDriver       = "N/A"
+        VID                 = "N/A"
+        DID                 = "N/A"
+        SVID                = "N/A"
+        SSID                = "N/A"
     })
     
     # Get PCI Devices and HBA Config for mapping
@@ -148,23 +152,24 @@ foreach ($vmHost in $Hosts) {
             }
 
             $Report.Add([PSCustomObject]@{
-                HostName          = $vmHost.Name
-                Vendor            = $vendor
-                ServerModel       = $serverModel
-                BiosVersion       = $biosVersion
-                CPUModel          = $cpuModel
-                TotalCores        = $totalCores
-                TotalMemoryGB     = $totalMemoryGB
-                TPMVersion        = $tpmVersion
-                Category          = "FC HBA"
-                DeviceName        = $hba.Adapter
-                HardwareModel     = $hba.ModelDescription
-                CurrentFirmware   = $hba.FirmwareVersion
-                CurrentDriver     = "$($hba.DriverName) $($hba.DriverVersion)"
-                VID               = $vid
-                DID               = $did
-                SVID              = $svid
-                SSID              = $ssid
+                CollectionTimestamp = "N/A"
+                HostName            = $vmHost.Name
+                Vendor              = $vendor
+                ServerModel         = $serverModel
+                BiosVersion         = $biosVersion
+                CPUModel            = $cpuModel
+                TotalCores          = $totalCores
+                TotalMemoryGB       = $totalMemoryGB
+                TPMVersion          = $tpmVersion
+                Category            = "FC HBA"
+                DeviceName          = $hba.Adapter
+                HardwareModel       = $hba.ModelDescription
+                CurrentFirmware     = $hba.FirmwareVersion
+                CurrentDriver       = "$($hba.DriverName) $($hba.DriverVersion)"
+                VID                 = $vid
+                DID                 = $did
+                SVID                = $svid
+                SSID                = $ssid
             })
         }
     } catch {
@@ -189,23 +194,24 @@ foreach ($vmHost in $Hosts) {
             }
             
             $Report.Add([PSCustomObject]@{
-                HostName          = $vmHost.Name
-                Vendor            = $vendor
-                ServerModel       = $serverModel
-                BiosVersion       = $biosVersion
-                CPUModel          = $cpuModel
-                TotalCores        = $totalCores
-                TotalMemoryGB     = $totalMemoryGB
-                TPMVersion        = $tpmVersion
-                Category          = "SAS HBA"
-                DeviceName        = $hba.DeviceName
-                HardwareModel     = $hba.ModelDescription
-                CurrentFirmware   = $hba.FirmwareVersion
-                CurrentDriver     = "$($hba.DriverName) $($hba.DriverVersion)"
-                VID               = $vid
-                DID               = $did
-                SVID              = $svid
-                SSID              = $ssid
+                CollectionTimestamp = "N/A"
+                HostName            = $vmHost.Name
+                Vendor              = $vendor
+                ServerModel         = $serverModel
+                BiosVersion         = $biosVersion
+                CPUModel            = $cpuModel
+                TotalCores          = $totalCores
+                TotalMemoryGB       = $totalMemoryGB
+                TPMVersion          = $tpmVersion
+                Category            = "SAS HBA"
+                DeviceName          = $hba.DeviceName
+                HardwareModel       = $hba.ModelDescription
+                CurrentFirmware     = $hba.FirmwareVersion
+                CurrentDriver       = "$($hba.DriverName) $($hba.DriverVersion)"
+                VID                 = $vid
+                DID                 = $did
+                SVID                = $svid
+                SSID                = $ssid
             })
         }
     } catch {
@@ -220,23 +226,24 @@ foreach ($vmHost in $Hosts) {
             # Skip CD ROMs and Datastore enclosures
             if ($disk.DeviceType -eq "Direct-Access" -or $disk.DeviceType -eq "Disk") {
                 $Report.Add([PSCustomObject]@{
-                    HostName        = $vmHost.Name
-                    Vendor          = $vendor
-                    ServerModel     = $serverModel
-                    BiosVersion     = $biosVersion
-                    CPUModel        = $cpuModel
-                    TotalCores      = $totalCores
-                    TotalMemoryGB   = $totalMemoryGB
-                    TPMVersion      = $tpmVersion
-                    Category        = "Physical Drive"
-                    DeviceName      = $disk.Device
-                    HardwareModel   = "$($disk.Vendor) $($disk.Model)"
-                    CurrentFirmware = $disk.Revision
-                    CurrentDriver   = $disk.DriveType # e.g. flash or hdd
-                    VID             = "N/A"
-                    DID             = "N/A"
-                    SVID            = "N/A"
-                    SSID            = "N/A"
+                    CollectionTimestamp = "N/A"
+                    HostName            = $vmHost.Name
+                    Vendor              = $vendor
+                    ServerModel         = $serverModel
+                    BiosVersion         = $biosVersion
+                    CPUModel            = $cpuModel
+                    TotalCores          = $totalCores
+                    TotalMemoryGB       = $totalMemoryGB
+                    TPMVersion          = $tpmVersion
+                    Category            = "Physical Drive"
+                    DeviceName          = $disk.Device
+                    HardwareModel       = "$($disk.Vendor) $($disk.Model)"
+                    CurrentFirmware     = $disk.Revision
+                    CurrentDriver       = $disk.DriveType # e.g. flash or hdd
+                    VID                 = "N/A"
+                    DID                 = "N/A"
+                    SVID                = "N/A"
+                    SSID                = "N/A"
                 })
             }
         }
@@ -250,23 +257,24 @@ foreach ($vmHost in $Hosts) {
         $bootbank = $esxcli.system.boot.device.get.Invoke()
         if ($bootbank.BootFilesystemUUID) {
             $Report.Add([PSCustomObject]@{
-                HostName        = $vmHost.Name
-                Vendor          = $vendor
-                ServerModel     = $serverModel
-                BiosVersion     = $biosVersion
-                CPUModel        = $cpuModel
-                TotalCores      = $totalCores
-                TotalMemoryGB   = $totalMemoryGB
-                TPMVersion      = $tpmVersion
-                Category        = "Boot Volume"
-                DeviceName      = $bootbank.BootFilesystemUUID
-                HardwareModel   = "Local Boot Bank"
-                CurrentFirmware = "N/A"
-                CurrentDriver   = "N/A"
-                VID             = "N/A"
-                DID             = "N/A"
-                SVID            = "N/A"
-                SSID            = "N/A"
+                CollectionTimestamp = "N/A"
+                HostName            = $vmHost.Name
+                Vendor              = $vendor
+                ServerModel         = $serverModel
+                BiosVersion         = $biosVersion
+                CPUModel            = $cpuModel
+                TotalCores          = $totalCores
+                TotalMemoryGB       = $totalMemoryGB
+                TPMVersion          = $tpmVersion
+                Category            = "Boot Volume"
+                DeviceName          = $bootbank.BootFilesystemUUID
+                HardwareModel       = "Local Boot Bank"
+                CurrentFirmware     = "N/A"
+                CurrentDriver       = "N/A"
+                VID                 = "N/A"
+                DID                 = "N/A"
+                SVID                = "N/A"
+                SSID                = "N/A"
             })
         }
     } catch {
@@ -301,23 +309,24 @@ foreach ($vmHost in $Hosts) {
             }
             
             $Report.Add([PSCustomObject]@{
-                HostName        = $vmHost.Name
-                Vendor          = $vendor
-                ServerModel     = $serverModel
-                BiosVersion     = $biosVersion
-                CPUModel        = $cpuModel
-                TotalCores      = $totalCores
-                TotalMemoryGB   = $totalMemoryGB
-                TPMVersion      = $tpmVersion
-                Category        = "Network Adapter"
-                DeviceName      = $nic.DeviceName
-                HardwareModel   = $hwModel
-                CurrentFirmware = $nicDetails.DriverInfo.FirmwareVersion
-                CurrentDriver   = "$($nicDetails.DriverInfo.Driver) $($nicDetails.DriverInfo.Version)"
-                VID             = $vid
-                DID             = $did
-                SVID            = $svid
-                SSID            = $ssid
+                CollectionTimestamp = "N/A"
+                HostName            = $vmHost.Name
+                Vendor              = $vendor
+                ServerModel         = $serverModel
+                BiosVersion         = $biosVersion
+                CPUModel            = $cpuModel
+                TotalCores          = $totalCores
+                TotalMemoryGB       = $totalMemoryGB
+                TPMVersion          = $tpmVersion
+                Category            = "Network Adapter"
+                DeviceName          = $nic.DeviceName
+                HardwareModel       = $hwModel
+                CurrentFirmware     = $nicDetails.DriverInfo.FirmwareVersion
+                CurrentDriver       = "$($nicDetails.DriverInfo.Driver) $($nicDetails.DriverInfo.Version)"
+                VID                 = $vid
+                DID                 = $did
+                SVID                = $svid
+                SSID                = $ssid
             })
         } catch {
             Write-Warning "Could not query NIC $($nic.DeviceName) on $($vmHost.Name)"
