@@ -19,7 +19,7 @@ The resulting CSV will be saved in the directory where the script is executed.
 # =====================================================================
 
 # FQDN or IP address of the vCenter Server
-$vCenterServer = "vcsa.gsxesx.local" 
+$vCenterServer = "Enter the FQDN or IP of your vcenter here. Don't lead with http:// or https://"
 
 # Name of the vSphere Cluster to target
 $ClusterName = "vSAN Cluster" 
@@ -36,14 +36,14 @@ if (-not (Get-Module -Name VMware.PowerCLI -ErrorAction SilentlyContinue)) {
     Import-Module VMware.PowerCLI -ErrorAction Stop
 }
 
-# Prompt user for CEIP participation
+# Prompt user for CEIP participation (Session scope only)
 $ceipChoice = Read-Host "Do you want to participate in the VMware Customer Experience Improvement Program (CEIP)? (Y/N)"
 if ($ceipChoice -match "^[Yy]$") {
-    Set-PowerCLIConfiguration -Scope User -ParticipateInCEIP $true -Confirm:$false | Out-Null
-    Write-Host "CEIP participation enabled." -ForegroundColor Green
+    Set-PowerCLIConfiguration -Scope Session -ParticipateInCEIP $true -Confirm:$false | Out-Null
+    Write-Host "CEIP participation enabled for this session." -ForegroundColor Green
 } elseif ($ceipChoice -match "^[Nn]$") {
-    Set-PowerCLIConfiguration -Scope User -ParticipateInCEIP $false -Confirm:$false | Out-Null
-    Write-Host "CEIP participation disabled." -ForegroundColor Yellow
+    Set-PowerCLIConfiguration -Scope Session -ParticipateInCEIP $false -Confirm:$false | Out-Null
+    Write-Host "CEIP participation disabled for this session." -ForegroundColor Yellow
 } else {
     Write-Host "Invalid choice. Proceeding with current CEIP settings." -ForegroundColor Yellow
 }
@@ -68,8 +68,8 @@ if (Test-Path $OutputFile) {
     }
 }
 
-# Ignore self signed certificate errors (if applicable)
-Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -Confirm:$false | Out-Null
+# Ignore self-signed certificate errors for this session only (no persistent changes)
+Set-PowerCLIConfiguration -Scope Session -InvalidCertificateAction Ignore -Confirm:$false | Out-Null
 
 Write-Host "Connecting to vCenter Server: $vCenterServer" -ForegroundColor Cyan
 Connect-VIServer -Server $vCenterServer 
