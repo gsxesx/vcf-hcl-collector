@@ -19,7 +19,7 @@ The resulting CSV will be saved in the directory where the script is executed.
 # =====================================================================
 
 # FQDN or IP address of the vCenter Server
-$vCenterServer = "vcsa.name_of_your_vcenter.local" 
+$vCenterServer = "vcsa.gsxesx.local" 
 
 # Name of the vSphere Cluster to target
 $ClusterName = "vSAN Cluster" 
@@ -329,10 +329,21 @@ Write-Host "Disconnecting from vCenter..." -ForegroundColor Cyan
 Disconnect-VIServer -Server $vCenterServer -Confirm:$false
 
 Write-Host "Exporting data to $OutputFile" -ForegroundColor Green
-if ($ExportMode -eq "Append") {
-    $Report | Export-Csv -Path $OutputFile -NoTypeInformation -Append
-} else {
-    $Report | Export-Csv -Path $OutputFile -NoTypeInformation
+
+# Prepare parameters for cross-version Export-Csv compatibility
+$csvParams = @{
+    Path = $OutputFile
 }
+
+# Apply -NoTypeInformation only when running on Windows PowerShell 5.1 or earlier
+if ($PSVersionTable.PSVersion.Major -lt 6) {
+    $csvParams['NoTypeInformation'] = $true
+}
+
+if ($ExportMode -eq "Append") {
+    $csvParams['Append'] = $true
+}
+
+$Report | Export-Csv @csvParams
 
 Write-Host "Script execution completed." -ForegroundColor Green
